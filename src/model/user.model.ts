@@ -1,6 +1,7 @@
-import { getModelForClass, modelOptions, pre, prop, Severity } from "@typegoose/typegoose";
+import { DocumentType, getModelForClass, modelOptions, pre, prop, Severity } from "@typegoose/typegoose";
 import argon2 from "argon2";
 import { nanoid } from "nanoid";
+import log from "../utils/logger";
 
 
 @pre<User>("save", async function(){
@@ -43,6 +44,15 @@ export class User {
    
     @prop({ default: false })
     verified: boolean;
+
+    async validatePassword(this: DocumentType<User>, password: string){
+        try {
+            return await argon2.verify(this.password, password);
+        } catch (error) {
+            log.error(error, "Could not validate password");
+            return false;
+        }
+    }
 }
 
 const UserModel = getModelForClass(User);

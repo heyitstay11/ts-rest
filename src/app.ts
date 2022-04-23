@@ -7,6 +7,8 @@ const PORT = process.env.PORT || config.get('PORT');
 
 const app = express();
 
+app.use(express.json());
+
 connectDB();
 
 app.use(router);
