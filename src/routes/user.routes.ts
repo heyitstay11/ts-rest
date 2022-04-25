@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { createUserHandler, forgotPasswordHandler, resetPasswordHandler, verifyUserHandler } from "../controller/user.controller";
+import { createUserHandler, forgotPasswordHandler, getCurrentUserHandler, resetPasswordHandler, verifyUserHandler } from "../controller/user.controller";
+import requireUser from "../middleware/requireUser";
 import { validateResource } from "../middleware/validateResource";
 import { createUserSchema, forgotPasswordSchema, resetPasswordSchema, verifyUserSchema } from "../schema/user.schema";
 
 const router = Router();
+
+router.get("/me", requireUser ,getCurrentUserHandler);
 
 router.post('/create', validateResource(createUserSchema),  createUserHandler);
 

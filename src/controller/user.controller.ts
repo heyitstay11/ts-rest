@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+import { omit } from 'lodash';
 import { nanoid } from 'nanoid';
-import UserModel, { User } from '../model/user.model';
+import UserModel, { privateFields } from '../model/user.model';
 import { CreateUserInput, ForgotPasswordInput, ResetPasswordInput, VerifyUserInput } from '../schema/user.schema';
 import { createUser } from '../service/user.service';
 import { sendEmail } from '../utils/mailer';
@@ -103,4 +104,16 @@ export async function resetPasswordHandler(req: Request<ResetPasswordInput['para
         return res.status(500).json(error); 
     }
 
+}
+
+export async function getCurrentUserHandler(req: Request, res: Response ) {
+    try {
+        const { id } = res.locals.user;
+        
+        const user  = await UserModel.findById(id);
+        
+        return res.json(omit(user?.toJSON(), privateFields));
+    } catch (error) {
+        return res.status(500).json(error); 
+    }
 }
